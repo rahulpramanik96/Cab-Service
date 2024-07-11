@@ -2,9 +2,11 @@ package com.lloyds.cab.Cab.Service.Impl;
 
 import ch.hsr.geohash.GeoHash;
 import com.lloyds.cab.Cab.DAO.AddressRepository;
+import com.lloyds.cab.Cab.DAO.CabBookingRequestDetailsRepository;
 import com.lloyds.cab.Cab.DAO.CabRepository;
 import com.lloyds.cab.Cab.Models.Address;
 import com.lloyds.cab.Cab.Models.Cab;
+import com.lloyds.cab.Cab.Models.CabBookingRequestDetails;
 import com.lloyds.cab.Cab.Service.AddressToGeoHashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ public class AddressToGeoHashServiceImpl implements AddressToGeoHashService {
     @Autowired
     CabRepository cabRepository;
 
+    @Autowired
+    CabBookingRequestDetailsRepository cabBookingRequestDetailsRepository;
+
     @Override
     public Address latLngConvert(Address address) {
 
@@ -34,20 +39,70 @@ public class AddressToGeoHashServiceImpl implements AddressToGeoHashService {
 
     }
 
+//    @Override
+//    public Map<Integer, List<Address>> getStatus() {
+//        List<Address> cabRequests = addressRepository.findAll();
+//
+//// Sorting the list of addresses by the 'hash' field using a lambda expression
+//        cabRequests.sort(Comparator.comparing(Address::getHash));
+//
+//// Grouping the sorted list into sublists of 4 elements each based on the first 6 characters of 'hash'
+//        List<List<Address>> partitioned = new ArrayList<>();
+//        List<Address> temp = new ArrayList<>();
+//        String currentPrefix = null;
+//
+//        for (Address address : cabRequests) {
+//            String prefix = address.getHash().substring(0, 6);
+//
+//            if (!prefix.equals(currentPrefix)) {
+//                if (!temp.isEmpty()) {
+//                    partitioned.add(new ArrayList<>(temp)); // Add a copy to partitioned list
+//                    temp.clear();
+//                }
+//                currentPrefix = prefix;
+//            }
+//
+//            temp.add(address);
+//
+//            // If temp has reached size of 4, add it to partitioned list and reset temp
+//            if (temp.size() == 4) {
+//                partitioned.add(new ArrayList<>(temp)); // Add a copy to partitioned list
+//                temp.clear();
+//                currentPrefix = null; // Reset currentPrefix to start a new group
+//            }
+//        }
+//
+//// Add any remaining elements in temp to partitioned list
+//        if (!temp.isEmpty()) {
+//            partitioned.add(new ArrayList<>(temp));
+//        }
+//
+//// Converting the partitioned sublists into a Map with an index as the key
+//        Map<Integer, List<Address>> groupedByIndex = IntStream.range(0, partitioned.size())
+//                .boxed()
+//                .collect(Collectors.toMap(i -> i, partitioned::get));
+//
+//        System.out.println(groupedByIndex);
+//
+//        return groupedByIndex;
+//
+//    }
+
     @Override
-    public Map<Integer, List<Address>> getStatus() {
-        List<Address> cabRequests = addressRepository.findAll();
+    public Map<Integer, List<CabBookingRequestDetails>> getStatus() {
+        List<CabBookingRequestDetails> cabRequests = cabBookingRequestDetailsRepository.findAll();
 
 // Sorting the list of addresses by the 'hash' field using a lambda expression
-        cabRequests.sort(Comparator.comparing(Address::getHash));
+        cabRequests.sort(Comparator.comparing(cabBookingRequestDetails -> cabBookingRequestDetails.getUser().getAddress().getHash()
+        ));
 
 // Grouping the sorted list into sublists of 4 elements each based on the first 6 characters of 'hash'
-        List<List<Address>> partitioned = new ArrayList<>();
-        List<Address> temp = new ArrayList<>();
+        List<List<CabBookingRequestDetails>> partitioned = new ArrayList<>();
+        List<CabBookingRequestDetails> temp = new ArrayList<>();
         String currentPrefix = null;
 
-        for (Address address : cabRequests) {
-            String prefix = address.getHash().substring(0, 6);
+        for (CabBookingRequestDetails cabRequest : cabRequests) {
+            String prefix = cabRequest.getUser().getAddress().getHash().substring(0, 6);
 
             if (!prefix.equals(currentPrefix)) {
                 if (!temp.isEmpty()) {
@@ -57,14 +112,14 @@ public class AddressToGeoHashServiceImpl implements AddressToGeoHashService {
                 currentPrefix = prefix;
             }
 
-            temp.add(address);
+            temp.add(cabRequest);
 
             // If temp has reached size of 4, add it to partitioned list and reset temp
-            if (temp.size() == 4) {
-                partitioned.add(new ArrayList<>(temp)); // Add a copy to partitioned list
-                temp.clear();
-                currentPrefix = null; // Reset currentPrefix to start a new group
-            }
+//            if (temp.size() == 4) {
+//                partitioned.add(new ArrayList<>(temp)); // Add a copy to partitioned list
+//                temp.clear();
+//                currentPrefix = null; // Reset currentPrefix to start a new group
+//            }
         }
 
 // Add any remaining elements in temp to partitioned list
@@ -73,7 +128,7 @@ public class AddressToGeoHashServiceImpl implements AddressToGeoHashService {
         }
 
 // Converting the partitioned sublists into a Map with an index as the key
-        Map<Integer, List<Address>> groupedByIndex = IntStream.range(0, partitioned.size())
+        Map<Integer, List<CabBookingRequestDetails>> groupedByIndex = IntStream.range(0, partitioned.size())
                 .boxed()
                 .collect(Collectors.toMap(i -> i, partitioned::get));
 
@@ -82,7 +137,6 @@ public class AddressToGeoHashServiceImpl implements AddressToGeoHashService {
         return groupedByIndex;
 
     }
-
     @Override
     public Cab resisterCab(Cab cab) {
         return cabRepository.save(cab);
