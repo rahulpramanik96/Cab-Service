@@ -1,6 +1,7 @@
 package com.lloyds.cab.Cab.Service;
 
 import com.lloyds.cab.Cab.Models.Address;
+import com.lloyds.cab.Cab.Models.Cab;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface AddressToGeoHashService {
 
     public Address latLngConvert(Address address);
     public Map<Integer, List<Address>> getStatus();
+    public Cab resisterCab(Cab cab);
 }

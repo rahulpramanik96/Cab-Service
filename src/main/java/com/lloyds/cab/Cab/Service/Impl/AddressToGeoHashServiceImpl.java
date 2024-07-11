@@ -2,7 +2,9 @@ package com.lloyds.cab.Cab.Service.Impl;
 
 import ch.hsr.geohash.GeoHash;
 import com.lloyds.cab.Cab.DAO.AddressRepository;
+import com.lloyds.cab.Cab.DAO.CabRepository;
 import com.lloyds.cab.Cab.Models.Address;
+import com.lloyds.cab.Cab.Models.Cab;
 import com.lloyds.cab.Cab.Service.AddressToGeoHashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class AddressToGeoHashServiceImpl implements AddressToGeoHashService {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    CabRepository cabRepository;
 
     @Override
     public Address latLngConvert(Address address) {
@@ -76,5 +81,10 @@ public class AddressToGeoHashServiceImpl implements AddressToGeoHashService {
 
         return groupedByIndex;
 
+    }
+
+    @Override
+    public Cab resisterCab(Cab cab) {
+        return cabRepository.save(cab);
     }
 }
