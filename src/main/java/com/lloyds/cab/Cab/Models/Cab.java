@@ -18,5 +18,5 @@ public class Cab {
     private String originHash;
     private int capacity;
     private boolean pickUp;
-    private boolean drop;
+    private boolean dropOff;
 }

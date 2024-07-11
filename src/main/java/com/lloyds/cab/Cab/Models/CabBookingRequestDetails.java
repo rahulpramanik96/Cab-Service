@@ -9,7 +9,7 @@ import lombok.Data;
 public class CabBookingRequestDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "drop_off", nullable = false)
     private boolean dropOff;
@@ -17,6 +17,7 @@ public class CabBookingRequestDetails {
     @Column(name = "pick_up", nullable = false)
     private boolean pickUp;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
